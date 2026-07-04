@@ -1,4 +1,4 @@
-# MIKELOCATIONS
+# LOCATIONS
 
 App móvil (iOS/Android) para compartir ubicación en tiempo real. Cada vez que te mueves 10 metros, envía automáticamente tu posición a un webhook de n8n.
 
@@ -67,3 +67,22 @@ const N8N_WEBHOOK_URL = "https://tu-dominio.com/webhook/...";
 
 - Solo funciona en iOS/Android. `react-native-maps` no es compatible con web.
 - El rastreo en segundo plano requiere permisos especiales (`ACCESS_BACKGROUND_LOCATION` en Android, `NSLocationAlways` en iOS).
+
+
+
+# 📱 Reto Móvil: Telemetría de Ubicación por Distancia
+
+## Descripción
+Rastreador GPS en tiempo real con React Native + n8n que usa `distanceInterval` de 10 metros para optimizar batería y red.
+
+## Tecnologías
+- React Native + Expo
+- n8n (automatización)
+- Telegram (notificaciones)
+
+## Instalación
+```bash
+git clone https://github.com/Andrik2703/LOCATION.git
+cd LOCATION
+npm install
+npx expo install expo-location expo-device expo-battery
