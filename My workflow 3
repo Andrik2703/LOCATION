@@ -1,0 +1,199 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "location-tracker",
+        "options": {
+          "responseData": "={\"status\":\"ok\",\"message\":\"Ubicación recibida\",\"timestamp\":\"{{$now.toISOString()}}\"}",
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "id": "8ed24dfd-6367-474f-b331-60484d27a717",
+      "name": "📡 Webhook GPS",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        608,
+        352
+      ],
+      "webhookId": "fa3f568f-5b56-48f1-b0d9-acd30928515d"
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "usuario",
+              "value": "={{ $json.body.usuario }}"
+            },
+            {
+              "name": "timestamp",
+              "value": "={{ $json.body.movimiento.marca_tiempo }}"
+            },
+            {
+              "name": "dispositivo",
+              "value": "={{ $json.body.dispositivo.nombre }}"
+            },
+            {
+              "name": "os_version",
+              "value": "={{ $json.body.dispositivo.version }}"
+            }
+          ],
+          "number": [
+            {
+              "name": "latitud",
+              "value": "={{ $json.body.ubicacion.lat }}"
+            },
+            {
+              "name": "longitud",
+              "value": "={{ $json.body.ubicacion.lon }}"
+            },
+            {
+              "name": "altitud",
+              "value": "={{ $json.body.ubicacion.altitud }}"
+            },
+            {
+              "name": "velocidad",
+              "value": "={{ $json.body.movimiento.velocidad_kmh }}"
+            },
+            {
+              "name": "precision",
+              "value": "={{ $json.body.ubicacion.precision }}"
+            },
+            {
+              "name": "bateria",
+              "value": "={{ $json.body.estado.bateria }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b7eba0ae-537a-47fd-a918-94ca3e5c41e1",
+      "name": "📊 Procesar Datos",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        832,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "8077873307",
+        "text": "=== 📍 NUEVA UBICACIÓN GPS ===\n\n👤 Usuario: {{$json.usuario}}\n📍 Latitud: {{$json.latitud}}\n📍 Longitud: {{$json.longitud}}\n🏔️ Altitud: {{$json.altitud}}m\n🚗 Velocidad: {{$json.velocidad}} km/h\n🎯 Precisión: {{$json.precision}}m\n🔋 Batería: {{$json.bateria}}%\n📱 Dispositivo: {{$json.dispositivo}}\n📱 OS: {{$json.os_version}}\n⏰ Hora: {{$json.timestamp}}\n\n🗺️ Ver en mapa:\nhttps://www.google.com/maps?q={{$json.latitud}},{{$json.longitud}}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1056,
+        256
+      ],
+      "id": "9189fe8f-04e3-4df9-8915-614ba0641808",
+      "name": "📨 Telegram",
+      "webhookId": "e0eb463c-2b27-405e-bc12-4de5f7c78488",
+      "credentials": {
+        "telegramApi": {
+          "id": "HXfCytxtYbrsFHfJ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "9933c897-35ff-46bc-b30f-0da4a523bedf",
+      "name": "✅ Responder",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1056,
+        448
+      ]
+    }
+  ],
+  "connections": {
+    "📡 Webhook GPS": {
+      "main": [
+        [
+          {
+            "node": "📊 Procesar Datos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📊 Procesar Datos": {
+      "main": [
+        [
+          {
+            "node": "📨 Telegram",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "✅ Responder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {
+    "📡 Webhook GPS": [
+      {
+        "headers": {
+          "host": "localhost:5678",
+          "user-agent": "curl/8.19.0",
+          "accept": "*/*",
+          "content-type": "application/json",
+          "content-length": "311"
+        },
+        "params": {},
+        "query": {},
+        "body": {
+          "usuario": "ANDRIK",
+          "ubicacion": {
+            "lat": 19.4326,
+            "lon": -99.1332,
+            "altitud": 2240,
+            "precision": 5
+          },
+          "movimiento": {
+            "velocidad": 0,
+            "velocidad_kmh": 0,
+            "marca_tiempo": "2026-07-04T16:30:00Z"
+          },
+          "dispositivo": {
+            "nombre": "SM-G998B",
+            "version": "Android 13",
+            "plataforma": "android"
+          },
+          "estado": {
+            "bateria": 85,
+            "timestamp_recepcion": "2026-07-04T16:30:00Z"
+          }
+        },
+        "webhookUrl": "http://localhost:5678/webhook-test/location-tracker",
+        "executionMode": "test"
+      }
+    ]
+  },
+  "meta": {
+    "instanceId": "f4befc70cbc391f6b3ad14f9729241067546c1fa7f205afa04cf4dce818100c5"
+  }
+}
